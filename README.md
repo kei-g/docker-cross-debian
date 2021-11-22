@@ -11,14 +11,14 @@ docker pull snowstep/cross-debian:latest
 ## Architectures
 
 - linux
-  - aarch64
+  - amd64
+  - arm64
   - armhf
-  - i686
-  - x86_64
+  - i386
 - mingw
   - w64
-    - i686
-    - x86_64
+    - amd64
+    - i386
 
 [license-image]:https://img.shields.io/github/license/kei-g/docker-cross-debian
 [license-url]:https://opensource.org/licenses/BSD-3-Clause
