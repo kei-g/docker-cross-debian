@@ -1,0 +1,24 @@
+jobs:
+  patch:
+    name: Patch description to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: Patch description
+        uses: peter-evans/dockerhub-description@v2
+        with:
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: snowstep/cross-debian
+          short-description: Cross compile environment on Debian
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+name: Docker Hub Description
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - .github/workflows/dockerhub-description.yml
+      - README.md
+  workflow_dispatch:
