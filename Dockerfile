@@ -1,7 +1,7 @@
 FROM debian:stable-slim
 
-ENV DEBCONF_NOWARNINGS=yes
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBCONF_NOWARNINGS yes
+ENV DEBIAN_FRONTEND noninteractive
 
 RUN dpkg --add-architecture arm64 && \
   dpkg --add-architecture armhf && \
@@ -38,5 +38,6 @@ RUN apt-get update && \
     libunwind-13-dev \
     lld-13 \
     llvm-13 \
-    make && \
-  echo '[ -d /usr/lib/llvm-13/bin ] && export PATH="/usr/lib/llvm-13/bin:$PATH"' >> $HOME/.profile
+    make
+
+ENV PATH /usr/lib/llvm-13/bin:$PATH
