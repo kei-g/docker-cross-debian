@@ -9,7 +9,7 @@ jobs:
           fetch-depth: 1
       - name: Build
         run: docker build .
-name: Build
+name: build
 on:
   pull_request:
     branches: [ main ]

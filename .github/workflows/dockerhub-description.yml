@@ -14,7 +14,7 @@ jobs:
           repository: snowstep/cross-debian
           short-description: Cross compile environment on Debian
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-name: Docker Hub Description
+name: dockerhub-description
 on:
   push:
     branches: [ main ]
