@@ -2,6 +2,12 @@
 
 `docker-cross-debian` - Cross compile environment on Debian
 
+## How to use
+
+```shell
+docker pull snowstep/cross-debian:latest
+```
+
 ## Architectures
 
 - linux
