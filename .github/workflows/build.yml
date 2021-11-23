@@ -14,14 +14,18 @@ on:
   pull_request:
     branches: [ main ]
     paths-ignore:
+      - .github/workflows/dockerhub-description.yml
+      - .github/workflows/publish.yml
       - CODE_OF_CONDUCT.md
       - CONTRIBUTING.md
-      - README.md
       - LICENSE
+      - README.md
   push:
     branches: [ main ]
     paths-ignore:
+      - .github/workflows/dockerhub-description.yml
+      - .github/workflows/publish.yml
       - CODE_OF_CONDUCT.md
       - CONTRIBUTING.md
-      - README.md
       - LICENSE
+      - README.md
