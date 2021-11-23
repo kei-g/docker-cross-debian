@@ -3,10 +3,10 @@ FROM debian:stable-slim
 ENV DEBCONF_NOWARNINGS yes
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN dpkg --add-architecture arm64 && \
+RUN dpkg --add-architecture amd64 && \
+  dpkg --add-architecture arm64 && \
   dpkg --add-architecture armhf && \
   dpkg --add-architecture i386 && \
-  dpkg --add-architecture amd64 && \
   apt-get update && \
   apt-get upgrade -y && \
   apt-get dist-upgrade -y && \
