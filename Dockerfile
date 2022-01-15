@@ -3,23 +3,23 @@ FROM debian:stable-slim
 ENV DEBCONF_NOWARNINGS=yes
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN dpkg --add-architecture amd64 && \
-  dpkg --add-architecture arm64 && \
-  dpkg --add-architecture armhf && \
-  dpkg --add-architecture i386 && \
-  apt-get update && \
-  apt-get upgrade -y && \
-  apt-get dist-upgrade -y && \
-  apt-get install -y clang gnupg lld llvm wget && \
-  wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | \
+RUN dpkg --add-architecture amd64
+RUN dpkg --add-architecture arm64
+RUN dpkg --add-architecture armhf
+RUN dpkg --add-architecture i386
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get dist-upgrade -y
+RUN apt-get install -y clang gnupg lld llvm wget
+RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | \
     apt-key add -
 
 COPY etc/ /etc/
 
-RUN apt-get update && \
-  apt-get upgrade -y && \
-  apt-get dist-upgrade -y && \
-  apt-get install -y \
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get dist-upgrade -y
+RUN apt-get install -y \
     automake \
     clang-13 \
     g++-aarch64-linux-gnu \
