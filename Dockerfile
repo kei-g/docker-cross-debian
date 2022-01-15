@@ -10,18 +10,11 @@ RUN dpkg --add-architecture i386
 RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get dist-upgrade -y
-RUN apt-get install -y clang gnupg lld llvm wget
-RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | \
-    apt-key add -
+RUN apt-get install -y gnupg lsb-release software-properties-common wget
+RUN wget -O - https://apt.llvm.org/llvm.sh | bash -s
 
-COPY etc/ /etc/
-
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get dist-upgrade -y
 RUN apt-get install -y \
     automake \
-    clang-13 \
     g++-aarch64-linux-gnu \
     g++-arm-linux-gnueabihf \
     g++-i686-linux-gnu \
@@ -36,8 +29,4 @@ RUN apt-get install -y \
     libc++abi-13-dev \
     libc6-dev-amd64-cross \
     libunwind-13-dev \
-    lld-13 \
-    llvm-13 \
     make
-
-ENV PATH=/usr/lib/llvm-13/bin:$PATH
