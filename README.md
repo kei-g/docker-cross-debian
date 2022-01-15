@@ -1,6 +1,6 @@
 # docker-cross-debian [![license][license-image]][license-url] [![docker][docker-image]][docker-url]
 
-[![GitHub][github-main-image]][github-url]
+[![GitHub CI (Build)][github-build-image]][github-build-url]
 
 `docker-cross-debian` - Cross compile environment on Debian
 
@@ -24,7 +24,7 @@ docker pull snowstep/cross-debian:latest
 
 [docker-image]:https://img.shields.io/docker/v/snowstep/cross-debian?logo=docker
 [docker-url]:https://hub.docker.com/r/snowstep/cross-debian
-[github-main-image]:https://img.shields.io/github/workflow/status/kei-g/docker-cross-debian/build?label=build&logo=github
-[github-url]:https://github.com/kei-g/docker-cross-debian
+[github-build-image]:https://github.com/kei-g/docker-cross-debian/actions/workflows/build.yml/badge.svg
+[github-build-url]:https://github.com/kei-g/docker-cross-debian/actions/workflows/build.yml
 [license-image]:https://img.shields.io/github/license/kei-g/docker-cross-debian
-[license-url]:https://opensource.org/licenses/BSD-3-Clause
+[license-url]:https://github.com/kei-g/docker-cross-debian/blob/main/LICENSE
