@@ -23,7 +23,7 @@ docker pull snowstep/cross-debian:latest
     - i386
 
 [docker-image]:https://img.shields.io/docker/v/snowstep/cross-debian?logo=docker
-[docker-url]:https://hub.docker.com/repository/docker/snowstep/cross-debian
+[docker-url]:https://hub.docker.com/r/snowstep/cross-debian
 [github-main-image]:https://img.shields.io/github/workflow/status/kei-g/docker-cross-debian/build?label=build&logo=github
 [github-url]:https://github.com/kei-g/docker-cross-debian
 [license-image]:https://img.shields.io/github/license/kei-g/docker-cross-debian
