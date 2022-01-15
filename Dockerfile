@@ -8,6 +8,7 @@ RUN apt-get upgrade -y
 RUN apt-get install -y sudo
 RUN apt-get install -y wget
 RUN wget -O - https://git.io/vokNn | bash -s
+RUN echo debconf apt-fast/aptmanager string apt | debconf-set-selections
 
 RUN dpkg --add-architecture amd64
 RUN dpkg --add-architecture arm64
@@ -16,7 +17,7 @@ RUN dpkg --add-architecture i386
 RUN apt-fast install -y gnupg
 RUN apt-fast install -y lsb-release
 RUN apt-fast install -y software-properties-common
-RUN wget -O - https://apt.llvm.org/llvm.sh | bash -s
+RUN alias apt-get=apt-fast && wget -O - https://apt.llvm.org/llvm.sh | bash -s
 
 RUN apt-fast install -y automake
 RUN apt-fast install -y g++-aarch64-linux-gnu
