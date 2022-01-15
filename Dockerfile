@@ -1,7 +1,7 @@
 FROM debian:stable-slim
 
-ENV DEBCONF_NOWARNINGS yes
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBCONF_NOWARNINGS=yes
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN dpkg --add-architecture amd64 && \
   dpkg --add-architecture arm64 && \
@@ -40,4 +40,4 @@ RUN apt-get update && \
     llvm-13 \
     make
 
-ENV PATH /usr/lib/llvm-13/bin:$PATH
+ENV PATH=/usr/lib/llvm-13/bin:$PATH
