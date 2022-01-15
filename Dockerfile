@@ -18,6 +18,7 @@ RUN apt-fast install -y gnupg
 RUN apt-fast install -y lsb-release
 RUN apt-fast install -y software-properties-common
 RUN alias apt-get=apt-fast && wget -O - https://apt.llvm.org/llvm.sh | bash -s
+RUN cd /usr/bin && for name in $(ls clang*-13 ll*-13); do ln -s $name $(echo $name | sed -e 's/\-13//'); done
 
 RUN apt-fast install -y automake
 RUN apt-fast install -y g++-aarch64-linux-gnu
