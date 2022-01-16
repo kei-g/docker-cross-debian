@@ -11,7 +11,7 @@ RUN for arch in amd64 arm64 armhf i386; do \
 # Install `apt-fast`
 RUN apt-get update \
   && apt-get upgrade -y \
-  && apt-get install -y \
+  && apt-get install --no-install-recommends -y \
     sudo \
     wget \
   && wget -O - https://git.io/vokNn \
