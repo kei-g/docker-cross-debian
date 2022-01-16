@@ -1,15 +1,13 @@
 FROM debian:stable-slim
 
-ENV DEBCONF_NOWARNINGS=yes
-ENV DEBIAN_FRONTEND=noninteractive
-
 # Add architectures
 RUN for arch in amd64 arm64 armhf i386; do \
     dpkg --add-architecture $arch; \
   done
 
 # Install `apt-fast`
-RUN apt-get update \
+RUN DEBIAN_FRONTEND=noninteractive \
+  && apt-get update \
   && apt-get upgrade -y \
   && apt-get install --no-install-recommends -y \
     sudo \
@@ -20,7 +18,8 @@ RUN apt-get update \
   | debconf-set-selections
 
 # Install LLVM
-RUN apt-fast install -y \
+RUN DEBIAN_FRONTEND=noninteractive \
+  && apt-fast install -y \
     gnupg \
     lsb-release \
     software-properties-common \
@@ -33,7 +32,8 @@ RUN apt-fast install -y \
   done
 
 # Install dependent packages
-RUN apt-fast install -y \
+RUN DEBIAN_FRONTEND=noninteractive \
+  && apt-fast install -y \
     automake \
     g++-aarch64-linux-gnu \
     g++-arm-linux-gnueabihf \
