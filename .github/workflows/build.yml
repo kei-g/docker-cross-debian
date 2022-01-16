@@ -1,3 +1,5 @@
+env:
+  IMAGE_NAME: cross-debian
 jobs:
   docker:
     if: github.ref_type == 'branch'
@@ -24,7 +26,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
           context: .
           push: false
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/cross-debian:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME}}/${{ env.IMAGE_NAME }}
       - name: Move cache
         run: |
           rm -fr /tmp/.buildx-cache

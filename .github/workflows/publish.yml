@@ -1,5 +1,5 @@
 env:
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/cross-debian
+  IMAGE_NAME: cross-debian
 jobs:
   docker:
     if: github.ref_type == 'tag'
@@ -42,10 +42,10 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.MAJOR_VERSION }}
-            ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.MINOR_VERSION }}
-            ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.MAJOR_VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.MINOR_VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}
       - name: Move cache
         run: |
           rm -fr /tmp/.buildx-cache
@@ -54,7 +54,7 @@ jobs:
         uses: peter-evans/dockerhub-description@v2
         with:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: ${{ env.IMAGE_NAME }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
           short-description: Cross compile environment on Debian
           username: ${{ secrets.DOCKERHUB_USERNAME }}
 name: Publish
