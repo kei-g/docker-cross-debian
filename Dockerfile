@@ -3,6 +3,12 @@ FROM debian:stable-slim
 ENV DEBCONF_NOWARNINGS=yes
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Add architectures
+RUN dpkg --add-architecture amd64
+RUN dpkg --add-architecture arm64
+RUN dpkg --add-architecture armhf
+RUN dpkg --add-architecture i386
+
 # Install `apt-fast`
 RUN apt-get update
 RUN apt-get upgrade -y
@@ -10,12 +16,6 @@ RUN apt-get install -y sudo
 RUN apt-get install -y wget
 RUN wget -O - https://git.io/vokNn | bash -s
 RUN echo debconf apt-fast/aptmanager string apt | debconf-set-selections
-
-# Add architectures
-RUN dpkg --add-architecture amd64
-RUN dpkg --add-architecture arm64
-RUN dpkg --add-architecture armhf
-RUN dpkg --add-architecture i386
 
 # Install LLVM
 RUN apt-fast install -y gnupg
