@@ -14,7 +14,7 @@ RUN apt-get update \
   && apt-get install --no-install-recommends -y \
     sudo \
     wget \
-  && wget -O - https://git.io/vokNn \
+  && wget --no-check-certificate -O - https://git.io/vokNn \
   | bash -s \
   && echo debconf apt-fast/aptmanager string apt \
   | debconf-set-selections
