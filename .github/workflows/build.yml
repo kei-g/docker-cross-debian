@@ -31,6 +31,16 @@ jobs:
         run: |
           rm -fr /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Save the built image
+        run: |
+          docker save \
+              -o /tmp/${{ env.IMAGE_NAME }}.tar \
+              ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
+      - name: Store the saved image to cache
+        uses: actions/cache@v2
+        with:
+          key: Built-${{ github.sha }}
+          path: /tmp/${{ env.IMAGE_NAME }}.tar
 name: Build
 on:
   pull_request:
