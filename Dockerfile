@@ -110,6 +110,8 @@ COPY fbsd /fbsd
 # Update indices of `pkg`
 RUN pkg -r /fbsd/13.0/amd64 update \
   && pkg -r /fbsd/13.0/arm64 update \
+  && pkg -r /fbsd/13.0/armv6 update \
+  && pkg -r /fbsd/13.0/armv7 update \
   && pkg -r /fbsd/13.0/i386 update
 
 # Setup `meson` configurations
