@@ -15,6 +15,8 @@ docker pull snowstep/cross-debian:latest
 - FreeBSD 13.0
   - amd64
   - arm64
+  - armv6
+  - armv7
   - i386
 - linux
   - amd64

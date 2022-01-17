@@ -1,5 +1,5 @@
 env:
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/cross-debian
+  IMAGE_NAME: cross-debian
 jobs:
   docker:
     if: github.ref_type == 'tag'
@@ -22,43 +22,42 @@ jobs:
           echo "::set-output name=VERSION::$VERSION"
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Cache Docker layers
+      - name: Restore the saved image from cache
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          path: /tmp/.buildx-cache
+          key: Built-${{ github.sha }}
+          path: /tmp/${{ env.IMAGE_NAME }}.tar
           restore-keys: |
-            ${{ runner.os }}-buildx-
+            Built-
+      - name: Load the restored image
+        run: |
+          docker load \
+              -i /tmp/${{ env.IMAGE_NAME }}.tar
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Build a docker image and push it
-        uses: docker/build-push-action@v2
-        with:
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-          context: .
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.MAJOR_VERSION }}
-            ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.MINOR_VERSION }}
-            ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.VERSION }}
-      - name: Move cache
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+      - name: Push the docker image to DockerHub
         run: |
-          rm -fr /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          prefix=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
+          tags=(${{ steps.version.outputs.MAJOR_VERSION }})
+          tags+=(${{ steps.version.outputs.MINOR_VERSION }})
+          tags+=(${{ steps.version.outputs.VERSION }})
+          for tag in "$tags[@]"; do
+            docker tag $prefix $prefix:$tag
+            docker push $prefix:$tag
+          done
+        shell: bash
       - name: Patch the description to Docker Hub
         uses: peter-evans/dockerhub-description@v2
         with:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: ${{ env.IMAGE_NAME }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
           short-description: Cross compile environment on Debian
           username: ${{ secrets.DOCKERHUB_USERNAME }}
 name: Publish
 on:
   create:
     tags:
-      - 'v[0-9]+(\.[0-9]+)*'
+      - v[0-9]+(\.[0-9]+)*

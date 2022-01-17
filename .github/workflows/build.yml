@@ -1,13 +1,31 @@
+env:
+  IMAGE_NAME: cross-debian
 jobs:
   docker:
     if: github.ref_type == 'branch'
     name: Docker
+    needs:
+      - freebsd-arm
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
+      - name: Restore armv6 files from cache
+        uses: actions/cache@v2
+        with:
+          key: FreeBSD-13.0-armv6-RPI-B
+          path: ./fbsd/13.0/armv6
+          restore-keys: |
+            FreeBSD-13.0-armv6-RPI-B
+      - name: Restore armv7 files from cache
+        uses: actions/cache@v2
+        with:
+          key: FreeBSD-13.0-armv7-GENERICSD
+          path: ./fbsd/13.0/armv7
+          restore-keys: |
+            FreeBSD-13.0-armv7-GENERICSD
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Cache Docker layers
@@ -17,11 +35,6 @@ jobs:
           path: /tmp/.buildx-cache
           restore-keys: |
             ${{ runner.os }}-buildx-
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Build
         uses: docker/build-push-action@v2
         with:
@@ -29,22 +42,26 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
           context: .
           push: false
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/cross-debian:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME}}/${{ env.IMAGE_NAME }}
       - name: Move cache
         run: |
           rm -fr /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Save the built image
+        run: |
+          docker save \
+              -o /tmp/${{ env.IMAGE_NAME }}.tar \
+              ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
+      - name: Store the saved image to cache
+        uses: actions/cache@v2
+        with:
+          key: Built-${{ github.sha }}
+          path: /tmp/${{ env.IMAGE_NAME }}.tar
+  freebsd-arm:
+    if: github.ref_type == 'branch'
+    name: Prepare FreeBSD ARMv6 and ARMv7
+    uses: ./.github/workflows/freebsd-arm.yml
 name: Build
 on:
   pull_request:
-    paths-ignore:
-      - '**.md'
-      - '.editorconfig'
-      - '.github/workflows/publish.yml'
-      - '.gitignore'
   push:
-    paths-ignore:
-      - '**.md'
-      - '.editorconfig'
-      - '.github/workflows/publish.yml'
-      - '.gitignore'
