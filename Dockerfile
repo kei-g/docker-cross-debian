@@ -1,10 +1,5 @@
 FROM debian:stable-slim
 
-# Add architectures
-RUN for arch in amd64 arm64 armhf i386; do \
-    dpkg --add-architecture $arch; \
-  done
-
 # Install `apt-fast`
 RUN DEBIAN_FRONTEND=noninteractive \
   && apt-get update \
