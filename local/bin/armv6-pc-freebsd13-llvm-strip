@@ -1,0 +1,2 @@
+#!/bin/sh
+exec llvm-strip --sysroot=/fbsd/13.0/armv6 "$@" --target=armv6m-pc-freebsd13
