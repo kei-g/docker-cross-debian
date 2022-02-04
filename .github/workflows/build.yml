@@ -41,8 +41,9 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
           context: .
+          load: true
           push: false
-          tags: ${{ secrets.DOCKERHUB_USERNAME}}/${{ env.IMAGE_NAME }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
       - name: Move cache
         run: |
           rm -fr /tmp/.buildx-cache
@@ -57,6 +58,12 @@ jobs:
         with:
           key: Built-${{ github.sha }}
           path: /tmp/${{ env.IMAGE_NAME }}.tar
+  examples:
+    if: github.ref_type == 'branch'
+    name: Examples
+    needs:
+      - docker
+    uses: ./.github/workflows/examples.yml
   freebsd-arm:
     if: github.ref_type == 'branch'
     name: Prepare FreeBSD ARMv6 and ARMv7
