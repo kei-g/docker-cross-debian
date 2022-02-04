@@ -32,11 +32,6 @@ RUN DEBIAN_FRONTEND=noninteractive \
     automake \
     build-essential \
     bzip2 \
-    g++-aarch64-linux-gnu \
-    g++-arm-linux-gnueabihf \
-    g++-i686-linux-gnu \
-    g++-mingw-w64-i686 \
-    g++-mingw-w64-x86-64 \
     gcc-aarch64-linux-gnu \
     gcc-arm-linux-gnueabihf \
     gcc-i686-linux-gnu \
