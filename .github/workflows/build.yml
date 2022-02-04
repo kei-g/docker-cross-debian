@@ -37,14 +37,4 @@ jobs:
 name: Build
 on:
   pull_request:
-    paths-ignore:
-      - '**.md'
-      - '.editorconfig'
-      - '.github/workflows/publish.yml'
-      - '.gitignore'
   push:
-    paths-ignore:
-      - '**.md'
-      - '.editorconfig'
-      - '.github/workflows/publish.yml'
-      - '.gitignore'
