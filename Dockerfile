@@ -1,33 +1,9 @@
-FROM debian:stable-slim
-
-# Install `apt-fast`
-RUN DEBIAN_FRONTEND=noninteractive \
-  && apt-get update \
-  && apt-get upgrade -y \
-  && apt-get install --no-install-recommends -y \
-    sudo \
-    wget \
-  && wget --no-check-certificate -O - https://git.io/vokNn \
-  | bash -s \
-  && echo debconf apt-fast/aptmanager string apt \
-  | debconf-set-selections
-
-# Install LLVM
-RUN DEBIAN_FRONTEND=noninteractive \
-  && apt-fast install -y \
-    gnupg \
-    lsb-release \
-    software-properties-common \
-  && alias apt-get=apt-fast \
-  && wget -O - https://apt.llvm.org/llvm.sh \
-  | bash -s \
-  && cd /usr/bin \
-  && for name in $(ls clang*-13 ll*-13); do \
-    ln -s $name $(echo $name | sed -e 's/\-13//'); \
-  done
+FROM snowstep/llvm
 
 # Install dependent packages
 RUN DEBIAN_FRONTEND=noninteractive \
+  && apt-fast update \
+  && apt-fast upgrade --no-install-recommends -yqq \
   && apt-fast install -y \
     automake \
     build-essential \
