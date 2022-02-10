@@ -47,11 +47,11 @@ RUN ln -s libstdc++.so.6 /usr/lib/libstdc++.so
 
 # Install `pkg` on Linux to download dependencies into the FreeBSD root
 RUN mkdir /pkg \
-  && curl -Lk https://github.com/freebsd/pkg/archive/refs/tags/1.17.5.tar.gz \
-    | bsdtar -C /pkg -xzf - \
-  && cd /pkg/pkg-1.17.5 \
+  && aria2c --dir=/pkg https://github.com/freebsd/pkg/archive/refs/tags/1.17.5.tar.gz \
+  && bsdtar -C /pkg -xz -f /pkg/pkg-1.17.5.tar.gz \
   && { \
-    ./configure --with-libarchive.pc \
+    cd /pkg/pkg-1.17.5 \
+    && ./configure --with-libarchive.pc \
     && { \
       make -j8 || make -V=1; \
       make install; \
@@ -60,16 +60,23 @@ RUN mkdir /pkg \
   && rm -fr /pkg /usr/local/sbin/pkg2ng
 
 # Download FreeBSD base
-RUN for arch in amd64 arm64 armv6 armv7 i386; do \
-    mkdir -p /fbsd/13.0/$arch; \
-  done \
-  && curl -k https://download.freebsd.org/ftp/releases/amd64/amd64/13.0-RELEASE/base.txz \
-    | bsdtar -C /fbsd/13.0/amd64 -Jxf - ./etc ./lib ./usr/include ./usr/lib ./usr/libdata ./usr/share/keys \
-  && ln -fs /fbsd/13.0/amd64/usr/share/keys /usr/share/keys \
-  && curl -k https://download.freebsd.org/ftp/releases/arm64/aarch64/13.0-RELEASE/base.txz \
-    | bsdtar -C /fbsd/13.0/arm64 -Jxf - ./etc ./lib ./usr/include ./usr/lib ./usr/libdata ./usr/share/keys \
-  && curl -k https://download.freebsd.org/ftp/releases/i386/i386/13.0-RELEASE/base.txz \
-    | bsdtar -C /fbsd/13.0/i386 -Jxf - ./etc ./lib ./usr/include ./usr/lib ./usr/libdata ./usr/share/keys
+RUN for arg in amd64:amd64/amd64 arm64:arm64/aarch64 i386:i386/i386; do \
+    arch=$(echo $arg | cut -d':' -f1) \
+    && dir=$(echo $arg | cut -d':' -f2) \
+    && mkdir -pv /fbsd/13.0/$arch \
+    && aria2c --dir=/tmp \
+      https://download.freebsd.org/ftp/releases/$dir/13.0-RELEASE/base.txz \
+    && bsdtar \
+      -C /fbsd/13.0/$arch \
+      -Jvxf /tmp/base.txz \
+      ./etc \
+      ./lib \
+      ./usr/include \
+      ./usr/lib \
+      ./usr/libdata \
+      ./usr/share/keys \
+    && rm -f /tmp/base.txz; \
+  done
 
 # Setup `pkg` configurations
 COPY fbsd /fbsd
