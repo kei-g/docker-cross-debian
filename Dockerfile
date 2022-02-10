@@ -31,6 +31,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
     libzstd-dev \
     m4 \
     make \
+    mingw-w64-tools \
     nettle-dev \
     python3 \
     python3-pip \
