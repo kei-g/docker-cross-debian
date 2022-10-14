@@ -46,12 +46,10 @@ jobs:
           done
         shell: bash
       - name: Patch the description to Docker Hub
-        uses: peter-evans/dockerhub-description@v2
-        with:
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
-          short-description: Cross compile environment on Debian
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          DOCKERHUB_PASSWORD="${{ secrets.DOCKERHUB_PASSWORD }}" \
+          DOCKERHUB_USERNAME="${{ secrets.DOCKERHUB_USERNAME }}" \
+          tools/patch-dockerhub.sh ${{ env.IMAGE_NAME }} "Cross compile environment on Debian"
 name: Publish
 on:
   create:
