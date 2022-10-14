@@ -1,7 +1,5 @@
 # docker-cross-debian [![license][license-image]][license-url] [![docker][docker-image]][docker-url]
 
-[![GitHub CI (Build)][github-build-image]][github-build-url]
-
 `docker-cross-debian` - Cross compile environment on Debian
 
 ## How to use
@@ -21,6 +19,10 @@ docker pull snowstep/cross-debian:latest
   - w64
     - amd64
     - i386
+
+## Workflows
+
+[![GitHub CI (Build)][github-build-image]][github-build-url]
 
 [docker-image]:https://img.shields.io/docker/v/snowstep/cross-debian?logo=docker
 [docker-url]:https://hub.docker.com/r/snowstep/cross-debian
