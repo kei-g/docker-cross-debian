@@ -1,0 +1,12 @@
+[binaries]
+ar = '/usr/local/bin/aarch64-pc-freebsd13-llvm-ar'
+c = '/usr/local/bin/aarch64-pc-freebsd13-clang'
+cpp = '/usr/local/bin/aarch64-pc-freebsd13-clang++'
+pkgconfig = '/usr/bin/pkgconf'
+strip = '/usr/local/bin/aarch64-pc-freebsd13-llvm-strip'
+
+[target_machine]
+cpu = 'aarch64'
+cpu_family = 'aarch64'
+endian = 'little'
+system = 'freebsd'

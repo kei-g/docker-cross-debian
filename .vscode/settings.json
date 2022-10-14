@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "**/LICENSE": "plaintext",
+    "**/local/share/meson/cross/**": "plaintext",
+    "**/meson.build": "plaintext",
+  },
+}

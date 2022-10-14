@@ -1,0 +1,2 @@
+#!/bin/sh
+exec lld --sysroot=/fbsd/13.0/arm64 "$@" --target=aarch64-pc-freebsd13
