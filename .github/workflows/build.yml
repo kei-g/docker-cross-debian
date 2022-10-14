@@ -3,7 +3,7 @@ env:
 jobs:
   docker:
     if: github.ref_type == 'branch'
-    name: Docker
+    name: Build the docker image
     needs:
       - freebsd-arm
     runs-on: ubuntu-latest

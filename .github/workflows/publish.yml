@@ -3,7 +3,7 @@ env:
 jobs:
   docker:
     if: github.ref_type == 'tag'
-    name: Docker
+    name: Build and Publish the docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
