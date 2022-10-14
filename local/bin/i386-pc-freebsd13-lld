@@ -1,0 +1,2 @@
+#!/bin/sh
+exec lld --sysroot=/fbsd/13.0/i386 "$@" --target=i386-pc-freebsd13
