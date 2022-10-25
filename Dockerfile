@@ -53,7 +53,7 @@ RUN mkdir /pkg \
     cd /pkg/pkg-1.17.5 \
     && ./configure --with-libarchive.pc \
     && { \
-      make -j8 || make -V=1; \
+      make -j $(nproc) || make -V=1; \
       make install; \
     }; \
   } \
