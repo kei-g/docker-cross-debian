@@ -1,38 +1,96 @@
-FROM debian:stable-slim
+FROM snowstep/llvm
 
-ENV DEBCONF_NOWARNINGS=yes
-ENV DEBIAN_FRONTEND=noninteractive
+# Install dependent packages
+RUN DEBIAN_FRONTEND=noninteractive \
+  && apt-fast update \
+  && apt-fast upgrade --no-install-recommends -yqq \
+  && apt-fast install -y \
+    automake \
+    build-essential \
+    bzip2 \
+    gcc-aarch64-linux-gnu \
+    gcc-arm-linux-gnueabihf \
+    gcc-i686-linux-gnu \
+    gcc-mingw-w64-i686 \
+    gcc-mingw-w64-x86-64 \
+    libacl1-dev \
+    libarchive-dev \
+    libarchive-tools \
+    libattr1-dev \
+    libbsd-dev \
+    libbz2-dev \
+    libc6-dev-amd64-cross \
+    libexpat1-dev \
+    liblua5.2-dev \
+    liblz4-dev \
+    liblzma-dev \
+    liblzo2-dev \
+    libsqlite3-dev \
+    libssl-dev \
+    libxml2-dev \
+    libzstd-dev \
+    m4 \
+    make \
+    mingw-w64-tools \
+    nettle-dev \
+    python3 \
+    python3-pip \
+    zlib1g-dev \
+  && apt-get -y clean \
+  && rm -fr /var/lib/apt/lists/* \
+  && python3 -m pip install --upgrade pip \
+  && python3 -m pip install meson ninja \
+  && python3 -m pip cache purge
 
-RUN apt-get update
-RUN apt-get upgrade -y
-RUN apt-get install -y sudo
-RUN apt-get install -y wget
-RUN wget -O - https://git.io/vokNn | bash -s
-RUN echo debconf apt-fast/aptmanager string apt | debconf-set-selections
+# Make a link for FreeBSD
+RUN ln -s libstdc++.so.6 /usr/lib/libstdc++.so
 
-RUN dpkg --add-architecture amd64
-RUN dpkg --add-architecture arm64
-RUN dpkg --add-architecture armhf
-RUN dpkg --add-architecture i386
-RUN apt-fast install -y gnupg
-RUN apt-fast install -y lsb-release
-RUN apt-fast install -y software-properties-common
-RUN alias apt-get=apt-fast && wget -O - https://apt.llvm.org/llvm.sh | bash -s
-RUN cd /usr/bin && for name in $(ls clang*-13 ll*-13); do ln -s $name $(echo $name | sed -e 's/\-13//'); done
+# Install `pkg` on Linux to download dependencies into the FreeBSD root
+ARG PKG_VER=1.18.4
+RUN mkdir /pkg \
+  && aria2c --dir=/pkg https://github.com/freebsd/pkg/archive/refs/tags/${PKG_VER}.tar.gz \
+  && bsdtar -C /pkg -xz -f /pkg/pkg-${PKG_VER}.tar.gz \
+  && { \
+    cd /pkg/pkg-${PKG_VER} \
+    && ./configure --with-libarchive.pc \
+    && { \
+      make -j $(nproc) || make -V=1; \
+      make install; \
+    }; \
+  } \
+  && rm -fr /pkg /usr/local/sbin/pkg2ng
 
-RUN apt-fast install -y automake
-RUN apt-fast install -y g++-aarch64-linux-gnu
-RUN apt-fast install -y g++-arm-linux-gnueabihf
-RUN apt-fast install -y g++-i686-linux-gnu
-RUN apt-fast install -y g++-mingw-w64-i686
-RUN apt-fast install -y g++-mingw-w64-x86-64
-RUN apt-fast install -y gcc-aarch64-linux-gnu
-RUN apt-fast install -y gcc-arm-linux-gnueabihf
-RUN apt-fast install -y gcc-i686-linux-gnu
-RUN apt-fast install -y gcc-mingw-w64-i686
-RUN apt-fast install -y gcc-mingw-w64-x86-64
-RUN apt-fast install -y libc++-13-dev
-RUN apt-fast install -y libc++abi-13-dev
-RUN apt-fast install -y libc6-dev-amd64-cross
-RUN apt-fast install -y libunwind-13-dev
-RUN apt-fast install -y make
+# Download FreeBSD base
+RUN for arg in amd64:amd64/amd64 arm64:arm64/aarch64 i386:i386/i386; do \
+    arch=$(echo $arg | cut -d':' -f1) \
+    && dir=$(echo $arg | cut -d':' -f2) \
+    && mkdir -pv /fbsd/13.0/$arch \
+    && aria2c --dir=/tmp \
+      https://download.freebsd.org/ftp/releases/$dir/13.0-RELEASE/base.txz \
+    && bsdtar \
+      -C /fbsd/13.0/$arch \
+      -Jvxf /tmp/base.txz \
+      ./etc \
+      ./lib \
+      ./usr/include \
+      ./usr/lib \
+      ./usr/libdata \
+      ./usr/share/keys \
+    && rm -f /tmp/base.txz; \
+  done
+
+# Setup `pkg` configurations
+COPY fbsd /fbsd
+
+# Update indices of `pkg`
+RUN pkg -r /fbsd/13.0/amd64 update \
+  && pkg -r /fbsd/13.0/arm64 update \
+  && pkg -r /fbsd/13.0/armv6 update \
+  && pkg -r /fbsd/13.0/armv7 update \
+  && pkg -r /fbsd/13.0/i386 update
+
+# Setup `meson` configurations
+COPY local /usr/local
+
+# Prepend ~/.local/bin to PATH
+ENV PATH ~/.local/bin:$PATH

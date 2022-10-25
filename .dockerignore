@@ -1,4 +1,4 @@
 **/*.md
 **/.*
 **/LICENSE
-**/Makefile
+**/tools/

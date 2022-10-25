@@ -1,0 +1,72 @@
+jobs:
+  freebsd-arm:
+    if: github.ref_type == 'branch'
+    name: Prepare FreeBSD-${{ matrix.version }} ${{ matrix.arch }}:${{ matrix.name }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: cache
+        name: Attempt to restore from cache
+        uses: actions/cache@v3
+        with:
+          key: FreeBSD-${{ matrix.version }}-${{ matrix.arch }}-${{ matrix.name }}
+          path: ./fbsd/${{ matrix.version }}/${{ matrix.arch }}
+          restore-keys: |
+            FreeBSD-${{ matrix.version }}-${{ matrix.arch }}-${{ matrix.name }}
+      - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+        name: Download ISO image
+        run: |
+          curl \
+              -k \
+              https://download.freebsd.org/ftp/releases/arm/${{ matrix.arch }}/ISO-IMAGES/${{ matrix.version }}/FreeBSD-${{ matrix.version }}-RELEASE-arm-${{ matrix.arch }}-${{ matrix.name }}.img.xz \
+            > ${{ matrix.arch }}-${{ matrix.name }}.img.xz
+      - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+        name: Decompress
+        run: |
+          xz -dv ${{ matrix.arch }}-${{ matrix.name }}.img.xz
+      - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+        name: Extract required files
+        run: |
+          device_name=$(sudo losetup --find)
+          sudo losetup --partscan $device_name ${{ matrix.arch }}-${{ matrix.name }}.img
+          part_name=$(sudo fdisk --list $device_name | grep 'FreeBSD$' | cut -d' ' -f1)
+          offset=$(sudo fdisk --list $part_name | grep '4.2BSD' | awk '{{ print $2 }}')
+          mkdir mnt
+          sudo mount -t ufs -o loop,noatime,offset=$(($offset * 512)),ro,ufstype=ufs2 $part_name ./mnt
+          arch_path=./fbsd/${{ matrix.version }}/${{ matrix.arch }}
+          mkdir -pv $arch_path/usr/share
+          sudo cp -r ./mnt/{etc,lib} $arch_path/
+          sudo cp -r ./mnt/usr/{include,lib{,data}} $arch_path/usr/
+          sudo rm -fr $arch_path/usr/lib/debug
+          sudo cp -r ./mnt/usr/share/keys $arch_path/usr/share/
+          sudo chown -R $(whoami) $arch_path
+          sudo umount ./mnt
+          rm -fr ./mnt
+          sudo losetup --detach $device_name
+          rm -f ${{ matrix.arch }}-${{ matrix.name }}.img
+        shell: bash
+      - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+        name: Cache extracted files
+        uses: actions/cache@v3
+        with:
+          key: FreeBSD-${{ matrix.version }}-${{ matrix.arch }}-${{ matrix.name }}
+          path: ./fbsd/${{ matrix.version }}/${{ matrix.arch }}
+          restore-keys: |
+            FreeBSD-${{ matrix.version }}-${{ matrix.arch }}-${{ matrix.name }}
+    strategy:
+      matrix:
+        arch:
+          - armv6
+          - armv7
+        exclude:
+          - arch: armv6
+            name: GENERICSD
+          - arch: armv7
+            name: RPI-B
+        name:
+          - GENERICSD
+          - RPI-B
+        version:
+          - '13.0'
+name: FreeBSD ARM
+on:
+  workflow_call:

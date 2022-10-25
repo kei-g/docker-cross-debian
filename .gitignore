@@ -1,1 +1,5 @@
-**/.vscode/
+!**/fbsd/*/usr/local/etc/pkg.conf
+**/*.img
+**/*.xz
+**/fbsd/
+**/mnt/
