@@ -22,7 +22,7 @@ jobs:
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: Restore the saved image from cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           key: Built-${{ github.sha }}
           path: /tmp/${{ env.IMAGE_NAME }}.tar
