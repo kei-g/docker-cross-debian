@@ -2,7 +2,7 @@ env:
   IMAGE_NAME: cross-debian
 jobs:
   docker:
-    if: github.ref_type == 'tag'
+    if: ${{ inputs.OUTDATED == 'true' }}
     name: Build and Publish the docker image
     runs-on: ubuntu-latest
     steps:
@@ -16,42 +16,52 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=semver,pattern={{major}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{version}}
+            type=schedule,pattern={{date 'YYYYMMDDHHmmss'}}
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
-      - name: Restore the saved image from cache
-        uses: actions/cache@v3
-        with:
-          key: Built-${{ github.sha }}
-          path: /tmp/${{ env.IMAGE_NAME }}.tar
-          restore-keys: |
-            Built-
-      - name: Load the restored image
-        run: |
-          docker load \
-              -i /tmp/${{ env.IMAGE_NAME }}.tar
       - name: Login to DockerHub
         uses: docker/login-action@v2
         with:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-      - name: Push the docker image to DockerHub
-        run: |
-          prefix=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
-          echo "${{ steps.meta.outputs.tags }}" | while read name; do
-            docker tag $prefix $name
-            docker push $name
-          done
-        shell: bash
-      - name: Patch the description to Docker Hub
-        run: |
-          DOCKERHUB_PASSWORD="${{ secrets.DOCKERHUB_PASSWORD }}" \
-          DOCKERHUB_USERNAME="${{ secrets.DOCKERHUB_USERNAME }}" \
-          tools/patch-dockerhub.sh ${{ env.IMAGE_NAME }} "Cross compile environment on Debian"
+      - name: Run Buildx and Push it to DockerHub
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+      - id: overview
+        name: Load README
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('node:fs')
+            fs.readFile('README.md', {}, (err, data) => {
+              if (err)
+                core.setFailed(err.message)
+              else
+                core.setOutput('content', data.toString())
+            })
+      - name: Patch the description
+        uses: kei-g/dockerhub-patch@main
+        with:
+          description: Cross compile environment on Debian
+          overview: |
+            ${{ steps.overview.outputs.content }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repo: ${{ env.IMAGE_NAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
 name: Publish
 on:
-  create:
-    tags:
-      - v[0-9]+(\.[0-9]+)*
+  workflow_call:
+    inputs:
+      OUTDATED:
+        description: 'Is necessary for update'
+        required: true
+        type: string
+    secrets:
+      DOCKERHUB_PASSWORD:
+        required: true
+      DOCKERHUB_USERNAME:
+        required: true

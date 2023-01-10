@@ -28,7 +28,7 @@ docker pull snowstep/cross-debian:latest
     - amd64
     - i386
 
-## Workflows
+## CI Status
 
 [![GitHub CI (Build)][github-build-image]][github-build-url]
 
