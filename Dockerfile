@@ -1,4 +1,4 @@
-FROM snowstep/llvm
+FROM snowstep/llvm:bullseye
 
 # Install dependent packages
 RUN DEBIAN_FRONTEND=noninteractive \
