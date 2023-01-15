@@ -80,7 +80,7 @@ RUN for arg in amd64:amd64/amd64 arm64:arm64/aarch64 i386:i386/i386; do \
   done
 
 # Setup `pkg` configurations
-COPY fbsd /fbsd
+COPY fbsd/ /fbsd/
 
 # Update indices of `pkg`
 RUN pkg -r /fbsd/13.0/amd64 update \
@@ -90,7 +90,7 @@ RUN pkg -r /fbsd/13.0/amd64 update \
   && pkg -r /fbsd/13.0/i386 update
 
 # Setup `meson` configurations
-COPY local /usr/local
+COPY local/ /usr/local/
 
 # Prepend ~/.local/bin to PATH
 ENV PATH ~/.local/bin:$PATH
