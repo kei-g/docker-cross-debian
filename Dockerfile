@@ -83,11 +83,9 @@ RUN for arg in amd64:amd64/amd64 arm64:arm64/aarch64 i386:i386/i386; do \
 COPY fbsd /fbsd
 
 # Update indices of `pkg`
-RUN pkg -r /fbsd/13.0/amd64 update \
-  && pkg -r /fbsd/13.0/arm64 update \
-  && pkg -r /fbsd/13.0/armv6 update \
-  && pkg -r /fbsd/13.0/armv7 update \
-  && pkg -r /fbsd/13.0/i386 update
+RUN for arch in amd64 arm64 armv6 armv7 i386; do \
+    pkg -r /fbsd/13.0/$arch update; \
+  done
 
 # Setup `meson` configurations
 COPY local /usr/local
