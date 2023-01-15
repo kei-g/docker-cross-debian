@@ -85,6 +85,7 @@ COPY fbsd /fbsd
 
 # Update indices of `pkg`
 RUN for arch in amd64 arm64 armv6 armv7 i386; do \
+    printf 'updating indices of pkg on %s\n' $arch >&2; \
     pkg -r /fbsd/${FREEBSD_VERSION}/$arch update; \
   done
 
