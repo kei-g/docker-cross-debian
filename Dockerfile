@@ -46,7 +46,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
 RUN ln -s libstdc++.so.6 /usr/lib/libstdc++.so
 
 # Install `pkg` on Linux to download dependencies into the FreeBSD root
-ARG PKG_VER=1.18.4
+ARG PKG_VER=1.19.0
 RUN mkdir /pkg \
   && aria2c --dir=/pkg https://github.com/freebsd/pkg/archive/refs/tags/${PKG_VER}.tar.gz \
   && bsdtar -C /pkg -xz -f /pkg/pkg-${PKG_VER}.tar.gz \
