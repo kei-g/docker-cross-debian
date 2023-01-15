@@ -1,2 +1,2 @@
 #!/bin/sh
-exec llvm-strip --sysroot=/fbsd/13.0/amd64 "$@" --target=x86_64-pc-freebsd13
+exec llvm-strip --sysroot=/fbsd/13.1/amd64 "$@" --target=x86_64-pc-freebsd13

@@ -1,2 +1,2 @@
 #!/bin/sh
-exec llvm-ar --sysroot=/fbsd/13.0/i386 "$@" --target=i386-pc-freebsd13
+exec llvm-ar --sysroot=/fbsd/13.1/i386 "$@" --target=i386-pc-freebsd13

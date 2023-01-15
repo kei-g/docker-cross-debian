@@ -1,4 +1,4 @@
-FROM snowstep/llvm
+FROM snowstep/llvm:bullseye
 
 # Install dependent packages
 RUN DEBIAN_FRONTEND=noninteractive \
@@ -46,7 +46,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
 RUN ln -s libstdc++.so.6 /usr/lib/libstdc++.so
 
 # Install `pkg` on Linux to download dependencies into the FreeBSD root
-ARG PKG_VER=1.18.4
+ARG PKG_VER=1.19.0
 RUN mkdir /pkg \
   && aria2c --dir=/pkg https://github.com/freebsd/pkg/archive/refs/tags/${PKG_VER}.tar.gz \
   && bsdtar -C /pkg -xz -f /pkg/pkg-${PKG_VER}.tar.gz \
@@ -61,14 +61,15 @@ RUN mkdir /pkg \
   && rm -fr /pkg /usr/local/sbin/pkg2ng
 
 # Download FreeBSD base
+ARG FREEBSD_VERSION=13.1
 RUN for arg in amd64:amd64/amd64 arm64:arm64/aarch64 i386:i386/i386; do \
     arch=$(echo $arg | cut -d':' -f1) \
     && dir=$(echo $arg | cut -d':' -f2) \
-    && mkdir -pv /fbsd/13.0/$arch \
+    && mkdir -pv /fbsd/${FREEBSD_VERSION}/$arch \
     && aria2c --dir=/tmp \
-      https://download.freebsd.org/ftp/releases/$dir/13.0-RELEASE/base.txz \
+      https://download.freebsd.org/ftp/releases/$dir/${FREEBSD_VERSION}-RELEASE/base.txz \
     && bsdtar \
-      -C /fbsd/13.0/$arch \
+      -C /fbsd/${FREEBSD_VERSION}/$arch \
       -Jvxf /tmp/base.txz \
       ./etc \
       ./lib \
@@ -80,17 +81,16 @@ RUN for arg in amd64:amd64/amd64 arm64:arm64/aarch64 i386:i386/i386; do \
   done
 
 # Setup `pkg` configurations
-COPY fbsd /fbsd
+COPY fbsd/ /fbsd/
 
 # Update indices of `pkg`
-RUN pkg -r /fbsd/13.0/amd64 update \
-  && pkg -r /fbsd/13.0/arm64 update \
-  && pkg -r /fbsd/13.0/armv6 update \
-  && pkg -r /fbsd/13.0/armv7 update \
-  && pkg -r /fbsd/13.0/i386 update
+RUN for arch in amd64 arm64 armv6 armv7 i386; do \
+    printf 'updating indices of pkg on %s\n' $arch >&2; \
+    pkg -r /fbsd/${FREEBSD_VERSION}/$arch update; \
+  done
 
 # Setup `meson` configurations
-COPY local /usr/local
+COPY local/ /usr/local/
 
 # Prepend ~/.local/bin to PATH
 ENV PATH ~/.local/bin:$PATH

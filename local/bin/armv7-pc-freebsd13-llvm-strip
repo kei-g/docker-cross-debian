@@ -1,2 +1,2 @@
 #!/bin/sh
-exec llvm-strip --sysroot=/fbsd/13.0/armv7 "$@" --target=armv7-pc-freebsd13
+exec llvm-strip --sysroot=/fbsd/13.1/armv7 "$@" --target=armv7-pc-freebsd13

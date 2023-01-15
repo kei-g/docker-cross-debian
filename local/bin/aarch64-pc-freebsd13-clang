@@ -1,2 +1,2 @@
 #!/bin/sh
-exec clang --sysroot=/fbsd/13.0/arm64 "$@" --target=aarch64-pc-freebsd13
+exec clang --sysroot=/fbsd/13.1/arm64 "$@" --target=aarch64-pc-freebsd13
