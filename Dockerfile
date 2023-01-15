@@ -61,14 +61,15 @@ RUN mkdir /pkg \
   && rm -fr /pkg /usr/local/sbin/pkg2ng
 
 # Download FreeBSD base
+ARG FREEBSD_VERSION=13.0
 RUN for arg in amd64:amd64/amd64 arm64:arm64/aarch64 i386:i386/i386; do \
     arch=$(echo $arg | cut -d':' -f1) \
     && dir=$(echo $arg | cut -d':' -f2) \
-    && mkdir -pv /fbsd/13.0/$arch \
+    && mkdir -pv /fbsd/${FREEBSD_VERSION}/$arch \
     && aria2c --dir=/tmp \
-      https://download.freebsd.org/ftp/releases/$dir/13.0-RELEASE/base.txz \
+      https://download.freebsd.org/ftp/releases/$dir/${FREEBSD_VERSION}-RELEASE/base.txz \
     && bsdtar \
-      -C /fbsd/13.0/$arch \
+      -C /fbsd/${FREEBSD_VERSION}/$arch \
       -Jvxf /tmp/base.txz \
       ./etc \
       ./lib \
@@ -84,7 +85,7 @@ COPY fbsd /fbsd
 
 # Update indices of `pkg`
 RUN for arch in amd64 arm64 armv6 armv7 i386; do \
-    pkg -r /fbsd/13.0/$arch update; \
+    pkg -r /fbsd/${FREEBSD_VERSION}/$arch update; \
   done
 
 # Setup `meson` configurations
