@@ -1,5 +1,6 @@
 env:
   IMAGE_NAME: cross-debian
+  FREEBSD_VERSION: 13.1
 jobs:
   docker:
     if: github.ref_type == 'branch'
@@ -15,17 +16,17 @@ jobs:
       - name: Restore armv6 files from cache
         uses: actions/cache@v3
         with:
-          key: FreeBSD-13.0-armv6-RPI-B
-          path: ./fbsd/13.0/armv6
+          key: FreeBSD-${{ env.FREEBSD_VERSION }}-armv6-RPI-B
+          path: ./fbsd/${{ env.FREEBSD_VERSION }}/armv6
           restore-keys: |
-            FreeBSD-13.0-armv6-RPI-B
+            FreeBSD-${{ env.FREEBSD_VERSION }}-armv6-RPI-B
       - name: Restore armv7 files from cache
         uses: actions/cache@v3
         with:
-          key: FreeBSD-13.0-armv7-GENERICSD
-          path: ./fbsd/13.0/armv7
+          key: FreeBSD-${{ env.FREEBSD_VERSION }}-armv7-GENERICSD
+          path: ./fbsd/${{ env.FREEBSD_VERSION }}/armv7
           restore-keys: |
-            FreeBSD-13.0-armv7-GENERICSD
+            FreeBSD-${{ env.FREEBSD_VERSION }}-armv7-GENERICSD
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Cache Docker layers

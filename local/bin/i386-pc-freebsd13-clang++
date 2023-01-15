@@ -1,2 +1,2 @@
 #!/bin/sh
-exec clang++ --sysroot=/fbsd/13.0/i386 "$@" --target=i386-pc-freebsd13
+exec clang++ --sysroot=/fbsd/13.1/i386 "$@" --target=i386-pc-freebsd13

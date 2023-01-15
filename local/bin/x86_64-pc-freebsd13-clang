@@ -1,2 +1,2 @@
 #!/bin/sh
-exec clang --sysroot=/fbsd/13.0/amd64 "$@" --target=x86_64-pc-freebsd13
+exec clang --sysroot=/fbsd/13.1/amd64 "$@" --target=x86_64-pc-freebsd13

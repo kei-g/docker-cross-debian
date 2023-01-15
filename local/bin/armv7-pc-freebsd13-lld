@@ -1,2 +1,2 @@
 #!/bin/sh
-exec lld --sysroot=/fbsd/13.0/armv7 "$@" --target=armv7-pc-freebsd13
+exec lld --sysroot=/fbsd/13.1/armv7 "$@" --target=armv7-pc-freebsd13
