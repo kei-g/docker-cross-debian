@@ -1,4 +1,5 @@
 env:
+  FREEBSD_VERSION: 13.1
   IMAGE_NAME: cross-debian
 jobs:
   docker:
@@ -24,6 +25,20 @@ jobs:
         with:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
+      - name: Restore armv6 files from cache
+        uses: actions/cache@v3
+        with:
+          key: FreeBSD-${{ env.FREEBSD_VERSION }}-armv6-RPI-B
+          path: ./fbsd/${{ env.FREEBSD_VERSION }}/armv6
+          restore-keys: |
+            FreeBSD-${{ env.FREEBSD_VERSION }}-armv6-RPI-B
+      - name: Restore armv7 files from cache
+        uses: actions/cache@v3
+        with:
+          key: FreeBSD-${{ env.FREEBSD_VERSION }}-armv7-GENERICSD
+          path: ./fbsd/${{ env.FREEBSD_VERSION }}/armv7
+          restore-keys: |
+            FreeBSD-${{ env.FREEBSD_VERSION }}-armv7-GENERICSD
       - name: Run Buildx and Push it to DockerHub
         uses: docker/build-push-action@v3
         with:
