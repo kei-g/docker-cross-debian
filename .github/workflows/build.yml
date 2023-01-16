@@ -1,6 +1,6 @@
 env:
-  IMAGE_NAME: cross-debian
   FREEBSD_VERSION: 13.1
+  IMAGE_NAME: cross-debian
 jobs:
   docker:
     if: github.ref_type == 'branch'
