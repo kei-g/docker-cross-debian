@@ -30,6 +30,7 @@ jobs:
           context: .
           push: true
           tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
             ${{ steps.meta.outputs.tags }}
       - id: overview
         name: Load README
