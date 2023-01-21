@@ -1,16 +1,18 @@
-# docker-cross-debian [![github][github-repo-image]][github-repo-url] [![license][license-image]][license-url] [![docker][docker-image]][docker-url]
+[![GitHub][github-repo-image]][github-repo-url] [![DockerHub][docker-image]][docker-url]
 
-`docker-cross-debian` - Cross compile environment on Debian
+# docker-cross-debian [![license][license-image]][license-url]
+
+[`docker-cross-debian`][github-repo-url] - Cross compile environment on Debian.
 
 This image depends on [![`docker-llvm`][docker-llvm-image]][docker-llvm-url]
 
-## How to use
+# Usage
 
 ```shell
 docker pull snowstep/cross-debian:latest
 ```
 
-## Architectures
+# Supported Architectures
 
 - FreeBSD 13.0
   - amd64
@@ -28,14 +30,34 @@ docker pull snowstep/cross-debian:latest
     - amd64
     - i386
 
-## CI Status
+# CI Status
 
-[![GitHub CI (Publish)][github-publish-image]][github-publish-url]
+| Workflow Name | Status |
+|-|-|
+| **Build** | [![GitHub CI (Build)][github-build-image]][github-build-url] |
+| **Examples** | [![GitHub CI (Examples)][github-examples-image]][github-examples-url] |
+| **Publish** | [![GitHub CI (Publish)][github-publish-image]][github-publish-url] |
+
+# License
+
+The scripts and documentation in this project are released under the [BSD-3-Clause License][license-url]
+
+# Contributions
+
+Contributions are welcome! See [Contributor's Guide](https://github.com/kei-g/docker-cross-debian/blob/main/CONTRIBUTING.md)
+
+# Code of Conduct
+
+:clap: Be nice. See [our code of conduct](https://github.com/kei-g/docker-cross-debian/blob/main/CODE_OF_CONDUCT.md)
 
 [docker-image]:https://img.shields.io/docker/v/snowstep/cross-debian?logo=docker
 [docker-llvm-image]:https://img.shields.io/docker/v/snowstep/llvm?label=snowstep%2Fdocker-llvm&logo=docker
 [docker-llvm-url]:https://hub.docker.com/r/snowstep/llvm
 [docker-url]:https://hub.docker.com/r/snowstep/cross-debian
+[github-build-image]:https://github.com/kei-g/docker-cross-debian/actions/workflows/build.yml/badge.svg
+[github-build-url]:https://github.com/kei-g/docker-cross-debian/actions/workflows/build.yml
+[github-examples-image]:https://github.com/kei-g/docker-cross-debian/actions/workflows/examples.yml/badge.svg
+[github-examples-url]:https://github.com/kei-g/docker-cross-debian/actions/workflows/examples.yml
 [github-publish-image]:https://github.com/kei-g/docker-cross-debian/actions/workflows/publish.yml/badge.svg
 [github-publish-url]:https://github.com/kei-g/docker-cross-debian/actions/workflows/publish.yml
 [github-repo-image]:https://img.shields.io/badge/github-kei--g%2Fdocker--cross--debian-brightgreen?logo=github

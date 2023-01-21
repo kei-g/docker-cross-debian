@@ -4,4 +4,7 @@
     "**/local/share/meson/cross/**": "plaintext",
     "**/meson.build": "plaintext",
   },
+  "markdownlint.config": {
+    "MD041": false,
+  },
 }
