@@ -4,6 +4,7 @@ for arch in amd64 arm64 armv6 armv7 i386; do
 	CC_LD=lld \
 	LDFLAGS=-fuse-ld=lld \
 	meson \
+		setup \
 		--backend=ninja \
 		--buildtype=release \
 		--cross-file=$arch-fbsd13 \
