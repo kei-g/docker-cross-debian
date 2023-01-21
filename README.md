@@ -51,7 +51,7 @@ Contributions are welcome! See [Contributor's Guide](https://github.com/kei-g/do
 :clap: Be nice. See [our code of conduct](https://github.com/kei-g/docker-cross-debian/blob/main/CODE_OF_CONDUCT.md)
 
 [docker-image]:https://img.shields.io/docker/v/snowstep/cross-debian?logo=docker
-[docker-llvm-image]:https://img.shields.io/docker/v/snowstep/llvm?label=snowstep%2Fdocker-llvm&logo=docker
+[docker-llvm-image]:https://img.shields.io/docker/v/snowstep/llvm?label=snowstep%2Fllvm&logo=docker
 [docker-llvm-url]:https://hub.docker.com/r/snowstep/llvm
 [docker-url]:https://hub.docker.com/r/snowstep/cross-debian
 [github-build-image]:https://github.com/kei-g/docker-cross-debian/actions/workflows/build.yml/badge.svg
