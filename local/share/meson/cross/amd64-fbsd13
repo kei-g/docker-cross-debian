@@ -2,6 +2,7 @@
 ar = '/usr/local/bin/x86_64-pc-freebsd13-llvm-ar'
 c = '/usr/local/bin/x86_64-pc-freebsd13-clang'
 cpp = '/usr/local/bin/x86_64-pc-freebsd13-clang++'
+ld = '/usr/local/bin/x86_64-pc-freebsd13-lld'
 pkgconfig = '/usr/bin/pkgconf'
 strip = '/usr/local/bin/x86_64-pc-freebsd13-llvm-strip'
 
