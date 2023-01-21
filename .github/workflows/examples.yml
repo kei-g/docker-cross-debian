@@ -47,4 +47,21 @@ jobs:
           - mingw
 name: Examples
 on:
-  workflow_call:
+  create:
+    branches-ignore:
+      - '**'
+    tags-ignore:
+      - '**'
+  pull_request:
+    branches-ignore:
+      - '**'
+  push:
+    branches-ignore:
+      - '**'
+    tags-ignore:
+      - '**'
+  workflow_run:
+    types:
+      - completed
+    workflows:
+      - Build
