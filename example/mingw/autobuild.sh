@@ -14,5 +14,4 @@ for arch in i686 x86_64; do
 		-o foo-$arch.exe \
 		-pedantic \
 		../src/foo.c
-done >&2
-tar -cf - foo-*
+done

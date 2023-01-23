@@ -34,8 +34,7 @@ docker pull snowstep/cross-debian:latest
 
 | Workflow Name | Status |
 |-|-|
-| **Build** | [![GitHub CI (Build)][github-build-image]][github-build-url] |
-| **Examples** | [![GitHub CI (Examples)][github-examples-image]][github-examples-url] |
+| **Example** | [![GitHub CI (Example)][github-example-image]][github-example-url] |
 | **Publish** | [![GitHub CI (Publish)][github-publish-image]][github-publish-url] |
 
 # License
@@ -54,10 +53,8 @@ Contributions are welcome! See [Contributor's Guide](https://github.com/kei-g/do
 [docker-llvm-image]:https://img.shields.io/docker/v/snowstep/llvm?label=snowstep%2Fllvm&logo=docker
 [docker-llvm-url]:https://hub.docker.com/r/snowstep/llvm
 [docker-url]:https://hub.docker.com/r/snowstep/cross-debian
-[github-build-image]:https://github.com/kei-g/docker-cross-debian/actions/workflows/build.yml/badge.svg
-[github-build-url]:https://github.com/kei-g/docker-cross-debian/actions/workflows/build.yml
-[github-examples-image]:https://github.com/kei-g/docker-cross-debian/actions/workflows/examples.yml/badge.svg
-[github-examples-url]:https://github.com/kei-g/docker-cross-debian/actions/workflows/examples.yml
+[github-example-image]:https://github.com/kei-g/docker-cross-debian/actions/workflows/example.yml/badge.svg
+[github-example-url]:https://github.com/kei-g/docker-cross-debian/actions/workflows/example.yml
 [github-publish-image]:https://github.com/kei-g/docker-cross-debian/actions/workflows/publish.yml/badge.svg
 [github-publish-url]:https://github.com/kei-g/docker-cross-debian/actions/workflows/publish.yml
 [github-repo-image]:https://img.shields.io/badge/github-kei--g%2Fdocker--cross--debian-brightgreen?logo=github

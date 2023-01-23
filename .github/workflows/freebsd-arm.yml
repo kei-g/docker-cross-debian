@@ -1,23 +1,20 @@
 jobs:
   freebsd-arm:
-    if: github.ref_type == 'branch'
-    name: Prepare FreeBSD-${{ matrix.version }} ${{ matrix.arch }}:${{ matrix.name }}
+    name: Prepare FreeBSD-${{ inputs.version }} ${{ matrix.arch }}:${{ matrix.name }}
     runs-on: ubuntu-latest
     steps:
       - id: cache
         name: Attempt to restore from cache
-        uses: actions/cache@v3
+        uses: actions/cache/restore@v3
         with:
-          key: FreeBSD-${{ matrix.version }}-${{ matrix.arch }}-${{ matrix.name }}
-          path: ./fbsd/${{ matrix.version }}/${{ matrix.arch }}
-          restore-keys: |
-            FreeBSD-${{ matrix.version }}-${{ matrix.arch }}-${{ matrix.name }}
+          key: FreeBSD-${{ inputs.version }}-${{ matrix.arch }}-${{ matrix.name }}
+          path: ./fbsd/${{ inputs.version }}/${{ matrix.arch }}
       - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
         name: Download ISO image
         run: |
           curl \
-              -k \
-              https://download.freebsd.org/ftp/releases/arm/${{ matrix.arch }}/ISO-IMAGES/${{ matrix.version }}/FreeBSD-${{ matrix.version }}-RELEASE-arm-${{ matrix.arch }}-${{ matrix.name }}.img.xz \
+              -ks \
+              https://download.freebsd.org/ftp/releases/arm/${{ matrix.arch }}/ISO-IMAGES/${{ inputs.version }}/FreeBSD-${{ inputs.version }}-RELEASE-arm-${{ matrix.arch }}-${{ matrix.name }}.img.xz \
             > ${{ matrix.arch }}-${{ matrix.name }}.img.xz
       - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
         name: Decompress
@@ -32,7 +29,7 @@ jobs:
           offset=$(sudo fdisk --list $part_name | grep '4.2BSD' | awk '{{ print $2 }}')
           mkdir mnt
           sudo mount -t ufs -o loop,noatime,offset=$(($offset * 512)),ro,ufstype=ufs2 $part_name ./mnt
-          arch_path=./fbsd/${{ matrix.version }}/${{ matrix.arch }}
+          arch_path=./fbsd/${{ inputs.version }}/${{ matrix.arch }}
           mkdir -pv $arch_path/usr/share
           sudo cp -r ./mnt/{etc,lib} $arch_path/
           sudo cp -r ./mnt/usr/{include,lib{,data}} $arch_path/usr/
@@ -46,27 +43,23 @@ jobs:
         shell: bash
       - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
         name: Cache extracted files
-        uses: actions/cache@v3
+        uses: actions/cache/save@v3
         with:
-          key: FreeBSD-${{ matrix.version }}-${{ matrix.arch }}-${{ matrix.name }}
-          path: ./fbsd/${{ matrix.version }}/${{ matrix.arch }}
-          restore-keys: |
-            FreeBSD-${{ matrix.version }}-${{ matrix.arch }}-${{ matrix.name }}
+          key: FreeBSD-${{ inputs.version }}-${{ matrix.arch }}-${{ matrix.name }}
+          path: ./fbsd/${{ inputs.version }}/${{ matrix.arch }}
     strategy:
       matrix:
-        arch:
-          - armv6
-          - armv7
-        exclude:
+        include:
           - arch: armv6
-            name: GENERICSD
-          - arch: armv7
             name: RPI-B
-        name:
-          - GENERICSD
-          - RPI-B
-        version:
-          - '13.1'
-name: FreeBSD ARM
+          - arch: armv7
+            name: GENERICSD
+name: Prepare FreeBSD ARM
 on:
   workflow_call:
+    inputs:
+      version:
+        description: >
+          The version of FreeBSD.
+        required: true
+        type: string

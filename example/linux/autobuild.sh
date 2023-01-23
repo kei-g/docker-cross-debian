@@ -16,5 +16,4 @@ for arg in aarch64:gnu arm:gnueabihf i686:gnu x86_64:gnu; do
 		-o foo-$arch \
 		-pedantic \
 		../src/foo.c
-done >&2
-tar -cf - foo-*
+done

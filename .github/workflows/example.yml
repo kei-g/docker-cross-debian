@@ -1,0 +1,32 @@
+jobs:
+  build:
+    container:
+      image: snowstep/cross-debian
+    name: Build example on ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Run the automatic build script for ${{ matrix.os }}
+        run: |
+          cd example/${{ matrix.os }}
+          ./autobuild.sh
+      - name: Archive built binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: Example-${{ matrix.os }}
+          path: |
+            foo-*
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - freebsd
+          - linux
+          - mingw
+name: Example
+on:
+  workflow_call:
+  workflow_dispatch:

@@ -16,5 +16,4 @@ for arch in amd64 arm64 armv6 armv7 i386; do
 		$arch
 	ninja -C $arch -v
 	mv $arch/foo foo-$arch
-done >&2
-tar -cf - foo-*
+done

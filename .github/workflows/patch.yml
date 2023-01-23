@@ -1,0 +1,25 @@
+jobs:
+  update:
+    name: Update the description on DockerHub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Patch the description
+        uses: kei-g/dockerhub-patch@main
+        with:
+          description: Cross compile environment on Debian.
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          repo: cross-debian
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+name: Update the description on DockerHub
+on:
+  workflow_call:
+    secrets:
+      DOCKERHUB_PASSWORD:
+        required: true
+      DOCKERHUB_USERNAME:
+        required: true
+  workflow_dispatch:

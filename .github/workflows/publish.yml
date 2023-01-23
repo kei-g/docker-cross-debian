@@ -1,23 +1,24 @@
-env:
-  FREEBSD_VERSION: 13.1
-  IMAGE_NAME: cross-debian
 jobs:
-  docker:
-    if: ${{ inputs.OUTDATED == 'true' }}
-    name: Build and Publish the docker image
+  build-and-push:
+    name: Build the image and push it to DockerHub
+    needs:
+      - freebsd-arm
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout the repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-      - id: meta
-        name: Docker metadata
-        uses: docker/metadata-action@v4
+      - name: Restore armv6 files from cache
+        uses: actions/cache/restore@v3
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=schedule,pattern={{date 'YYYYMMDDHHmmss'}}
+          key: FreeBSD-${{ inputs.freebsd-version }}-armv6-RPI-B
+          path: ./fbsd/${{ inputs.freebsd-version }}/armv6
+      - name: Restore armv7 files from cache
+        uses: actions/cache/restore@v3
+        with:
+          key: FreeBSD-${{ inputs.freebsd-version }}-armv7-GENERICSD
+          path: ./fbsd/${{ inputs.freebsd-version }}/armv7
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
@@ -25,55 +26,57 @@ jobs:
         with:
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-      - name: Restore armv6 files from cache
-        uses: actions/cache@v3
+      - id: current-time
+        if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv6.outputs.cache-hit == 'true' }}
+        name: Format the current time
+        run: |
+          printf 'value=%s\n' $(date "+%Y%m%d%H%M%S") | tee -a $GITHUB_OUTPUT
+      - name: Attempt to restore buildx cache
+        uses: actions/cache/restore@v3
         with:
-          key: FreeBSD-${{ env.FREEBSD_VERSION }}-armv6-RPI-B
-          path: ./fbsd/${{ env.FREEBSD_VERSION }}/armv6
+          key: buildx-${{ hashFiles('.github/workflows/*.yml', 'fbsd/**', 'local/**', 'Dockerfile') }}
+          path: /tmp/.buildx-cache
           restore-keys: |
-            FreeBSD-${{ env.FREEBSD_VERSION }}-armv6-RPI-B
-      - name: Restore armv7 files from cache
-        uses: actions/cache@v3
-        with:
-          key: FreeBSD-${{ env.FREEBSD_VERSION }}-armv7-GENERICSD
-          path: ./fbsd/${{ env.FREEBSD_VERSION }}/armv7
-          restore-keys: |
-            FreeBSD-${{ env.FREEBSD_VERSION }}-armv7-GENERICSD
+            buildx-
       - name: Run Buildx and Push it to DockerHub
         uses: docker/build-push-action@v3
         with:
+          cache-from: /tmp/.buildx-cache
+          cache-to: /tmp/.buildx-cache-new
           context: .
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:latest
-            ${{ steps.meta.outputs.tags }}
-      - id: overview
-        name: Load README
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const fs = require('node:fs')
-            fs.readFile('README.md', {}, (err, data) => {
-              if (err)
-                core.setFailed(err.message)
-              else
-                core.setOutput('content', data.toString())
-            })
-      - name: Patch the description
-        uses: kei-g/dockerhub-patch@main
-        with:
-          description: Cross compile environment on Debian
-          overview: |
-            ${{ steps.overview.outputs.content }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          repo: ${{ env.IMAGE_NAME }}
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/cross-debian:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/cross-debian:${{ steps.current-time.outputs.value }}
+      - name: Move buildx cache to save
+        run: |
+          mv /tmp/.buildx-cache{-new,}
+        shell: bash
+  example:
+    name: Build examples
+    needs:
+      - build-and-push
+    uses: ./.github/workflows/example.yml
+  freebsd-arm:
+    name: Prepare for FreeBSD ARM
+    uses: ./.github/workflows/freebsd-arm.yml
+    with:
+      version: ${{ inputs.freebsd-version }}
+  patch:
+    name: Patch the description to DockerHub
+    needs:
+      - build-and-push
+    secrets:
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+    uses: ./.github/workflows/patch.yml
 name: Publish
 on:
   workflow_call:
     inputs:
-      OUTDATED:
-        description: 'Is necessary for update'
+      freebsd-version:
+        description: >
+          The version of FreeBSD.
         required: true
         type: string
     secrets:
@@ -81,3 +84,13 @@ on:
         required: true
       DOCKERHUB_USERNAME:
         required: true
+  workflow_dispatch:
+    inputs:
+      freebsd-version:
+        default: '13.1'
+        description: >
+          The version of FreeBSD.
+        options:
+          - '13.1'
+        required: true
+        type: choice

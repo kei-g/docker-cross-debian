@@ -1,28 +1,24 @@
 jobs:
   dockerhub:
-    name: See the latest snowstep/cross-debian on DockerHub
+    name: Get the last updated timestamps of snowstep/cross-debian and snowstep/llvm on DockerHub
     outputs:
-      OUTDATED: ${{ steps.dockerhub-cross-debian.outputs.OUTDATED }}
+      cross-debian: ${{ steps.last-updated.outputs.cross-debian }}
+      llvm: ${{ steps.last-updated.outputs.llvm }}
     runs-on: ubuntu-latest
     steps:
-      - id: dockerhub-cross-debian
-        name: Compare the latest updates between snowstep/llvm and snowstep/cross-debian
+      - id: last-updated
+        name: Get the last updated timestamps of snowstep/cross-debian and snowstep/llvm
         run: |
           api=https://hub.docker.com/v2/namespaces/snowstep/repositories
           for repo in llvm cross-debian; do
             last=$(curl -s $api/$repo/tags | jq -cr '.results[]|select(.name=="latest").last_updated')
-            printf '%s=%s\n' $repo $last >&2
-            date --date=$last "+%s"
-          done | xargs | {
-            read latest_llvm latest_cross_debian
-            printf 'llvm=%s\n' $latest_llvm >&2
-            printf 'cross_debian=%s\n' $latest_cross_debian >&2
-            [[ $latest_llvm -lt $latest_cross_debian ]] \
-            && printf 'OUTDATED=false\n' \
-            || printf 'OUTDATED=true\n'
-          } | tee -a $GITHUB_OUTPUT
+            timestamp=$(date --date=$last "+%s")
+            printf '%s=%s (%s)\n' $repo $timestamp $last >&2
+            printf '%s=%s\n' $repo $timestamp
+          done > $GITHUB_OUTPUT
         shell: bash
   publish-if-outdated:
+    if: ${{ needs.dockerhub.outputs.cross-debian < needs.dockerhub.outputs.llvm }}
     name: Publish if outdated
     needs:
       - dockerhub
@@ -31,8 +27,9 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     uses: ./.github/workflows/publish.yml
     with:
-      OUTDATED: ${{ needs.dockerhub.outputs.OUTDATED == 'true' }}
+      freebsd-version: '13.1'
 name: Check updates
 on:
   schedule:
     - cron: '0 */12 * * *'
+  workflow_dispatch:
