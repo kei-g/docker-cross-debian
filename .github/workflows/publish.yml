@@ -7,10 +7,16 @@ jobs:
       outcome: ${{ steps.move.outputs.outcome }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v3
+      - id: checkout
+        name: Checkout the repository
+        uses: kei-g/github/checkout@main
         with:
           fetch-depth: 1
+          paths-to-hash: |
+            .github/workflows/*.yml
+            fbsd/**
+            local/**
+            Dockerfile
       - id: armv6
         name: Restore armv6 files from cache
         uses: actions/cache/restore@v3
@@ -42,7 +48,7 @@ jobs:
         name: Attempt to restore buildx cache
         uses: actions/cache/restore@v3
         with:
-          key: buildx-${{ hashFiles('.github/workflows/*.yml', 'fbsd/**', 'local/**', 'Dockerfile') }}
+          key: buildx-${{ steps.checkout.outputs.digest }}
           path: /tmp/.buildx-cache
           restore-keys: |
             buildx-
