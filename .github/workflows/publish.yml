@@ -75,6 +75,12 @@ jobs:
           mv /tmp/.buildx-cache{-new,}
           echo outcome=success | tee -a $GITHUB_OUTPUT
         shell: bash
+      - if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv7.outputs.cache-hit == 'true' && success() }}
+        name: Save the buildx cache
+        uses: actions/cache/save@v3
+        with:
+          key: buildx-${{ steps.checkout.outputs.digest }}
+          path: /tmp/.buildx-cache
   example:
     if: ${{ needs.build-and-push.outputs.outcome == 'success' }}
     name: Build examples
