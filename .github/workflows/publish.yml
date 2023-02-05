@@ -54,7 +54,7 @@ jobs:
             buildx-
       - if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv7.outputs.cache-hit == 'true' && steps.restore-cache.outputs.cache-hit == 'true' }}
         name: Run Buildx with cache and Push it to DockerHub
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           cache-from: /tmp/.buildx-cache
           cache-to: /tmp/.buildx-cache-new
@@ -65,7 +65,7 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/cross-debian:${{ steps.current-time.outputs.value }}
       - if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv7.outputs.cache-hit == 'true' && steps.restore-cache.outputs.cache-hit != 'true' }}
         name: Run Buildx without cache and Push it to DockerHub
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           cache-to: /tmp/.buildx-cache-new
           context: .
