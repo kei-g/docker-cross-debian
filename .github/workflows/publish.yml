@@ -52,29 +52,24 @@ jobs:
           path: /tmp/.buildx-cache
           restore-keys: |
             buildx-
-      - if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv7.outputs.cache-hit == 'true' && steps.restore-cache.outputs.cache-hit == 'true' }}
-        name: Run Buildx with cache and Push it to DockerHub
-        uses: docker/build-push-action@v4
-        with:
-          cache-from: /tmp/.buildx-cache
-          cache-to: /tmp/.buildx-cache-new
-          context: .
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/cross-debian:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/cross-debian:${{ steps.current-time.outputs.value }}
       - if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv7.outputs.cache-hit == 'true' && steps.restore-cache.outputs.cache-hit != 'true' }}
-        name: Run Buildx without cache and Push it to DockerHub
+        name: Create an empty directory
+        run: |
+          mkdir -pv /tmp/.buildx-cache
+      - if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv7.outputs.cache-hit == 'true' }}
+        name: Run Buildx and Push it to DockerHub
         uses: docker/build-push-action@v4
         with:
-          cache-to: /tmp/.buildx-cache-new
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
           context: .
+          no-cache: ${{ steps.restore-cache.outputs.cache-hit != 'true' }}
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/cross-debian:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/cross-debian:${{ steps.current-time.outputs.value }}
       - id: move
-        if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv7.outputs.cache-hit == 'true' && steps.restore-cache.outputs.cache-hit == 'true' && success() }}
+        if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv7.outputs.cache-hit == 'true' && success() }}
         name: Move buildx cache to save
         run: |
           mv /tmp/.buildx-cache{-new,}
