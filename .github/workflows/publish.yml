@@ -72,6 +72,7 @@ jobs:
         if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv7.outputs.cache-hit == 'true' && success() }}
         name: Move buildx cache to save
         run: |
+          rm -fr /tmp/.buildx-cache
           mv /tmp/.buildx-cache{-new,}
           echo outcome=success | tee -a $GITHUB_OUTPUT
         shell: bash
