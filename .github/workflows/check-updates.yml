@@ -27,7 +27,7 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     uses: ./.github/workflows/publish.yml
     with:
-      freebsd-version: '13.1'
+      freebsd-version: '13.2'
 name: Check updates
 on:
   schedule:
