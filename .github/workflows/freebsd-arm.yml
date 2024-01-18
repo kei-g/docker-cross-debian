@@ -5,7 +5,7 @@ jobs:
     steps:
       - id: cache
         name: Attempt to restore from cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           key: FreeBSD-${{ inputs.version }}-${{ matrix.arch }}-${{ matrix.name }}
           path: ./fbsd/${{ inputs.version }}/${{ matrix.arch }}
@@ -43,7 +43,7 @@ jobs:
         shell: bash
       - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
         name: Cache extracted files
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           key: FreeBSD-${{ inputs.version }}-${{ matrix.arch }}-${{ matrix.name }}
           path: ./fbsd/${{ inputs.version }}/${{ matrix.arch }}
