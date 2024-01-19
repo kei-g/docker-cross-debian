@@ -19,13 +19,13 @@ jobs:
             Dockerfile
       - id: armv6
         name: Restore armv6 files from cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           key: FreeBSD-${{ inputs.freebsd-version }}-armv6-RPI-B
           path: ./fbsd/${{ inputs.freebsd-version }}/armv6
       - id: armv7
         name: Restore armv7 files from cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           key: FreeBSD-${{ inputs.freebsd-version }}-armv7-GENERICSD
           path: ./fbsd/${{ inputs.freebsd-version }}/armv7
@@ -46,7 +46,7 @@ jobs:
       - id: restore-cache
         if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv6.outputs.cache-hit == 'true' }}
         name: Attempt to restore buildx cache
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           key: buildx-${{ steps.checkout.outputs.digest }}
           path: /tmp/.buildx-cache
@@ -80,7 +80,7 @@ jobs:
         shell: bash
       - if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv7.outputs.cache-hit == 'true' && success() }}
         name: Save the buildx cache
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           key: buildx-${{ steps.checkout.outputs.digest }}
           path: /tmp/.buildx-cache
