@@ -58,7 +58,7 @@ jobs:
           mkdir -pv /tmp/.buildx-cache
       - if: ${{ steps.armv6.outputs.cache-hit == 'true' && steps.armv7.outputs.cache-hit == 'true' }}
         name: Run Buildx and Push it to DockerHub
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           build-args: |
             FREEBSD_VERSION=${{ inputs.freebsd-version }}
