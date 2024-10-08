@@ -61,7 +61,7 @@ RUN mkdir /pkg \
   && rm -fr /pkg /usr/local/sbin/pkg2ng
 
 # Download FreeBSD base
-ARG FREEBSD_VERSION=13.2
+ARG FREEBSD_VERSION=13.3
 RUN for arg in amd64:amd64/amd64 arm64:arm64/aarch64 i386:i386/i386; do \
     arch=$(echo $arg | cut -d':' -f1) \
     && dir=$(echo $arg | cut -d':' -f2) \

@@ -121,12 +121,10 @@ on:
   workflow_dispatch:
     inputs:
       freebsd-version:
-        default: '13.1'
+        default: '13.3'
         description: >
           The version of FreeBSD.
         options:
-          - '13.1'
-          - '13.2'
-          - '14.0'
+          - '13.3'
         required: true
         type: choice
