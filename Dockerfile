@@ -93,4 +93,4 @@ RUN for arch in amd64 arm64 armv6 armv7 i386; do \
 COPY local/ /usr/local/
 
 # Prepend ~/.local/bin to PATH
-ENV PATH ~/.local/bin:$PATH
+RUN export PATH=~/.local/bin:$PATH
