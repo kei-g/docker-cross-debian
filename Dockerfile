@@ -60,6 +60,9 @@ RUN mkdir /pkg \
   } \
   && rm -fr /pkg /usr/local/sbin/pkg2ng
 
+# Setup `pkg` configurations
+COPY fbsd/ /fbsd/
+
 # Download FreeBSD base
 ARG FREEBSD_VERSION=13.3
 RUN for arg in amd64:amd64/amd64 arm64:arm64/aarch64 i386:i386/i386; do \
@@ -79,9 +82,6 @@ RUN for arg in amd64:amd64/amd64 arm64:arm64/aarch64 i386:i386/i386; do \
       ./usr/share/keys \
     && rm -f /tmp/base.txz; \
   done
-
-# Setup `pkg` configurations
-COPY fbsd/ /fbsd/
 
 # Update indices of `pkg`
 RUN for arch in amd64 arm64 armv6 armv7 i386; do \
